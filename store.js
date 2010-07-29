@@ -25,21 +25,7 @@ var store = (function(){
 		return JSON.parse(value)
 	}
 
-	if (localStorageName in win && win[localStorageName]) {
-		storage = win[localStorageName]
-		api.set = function(key, val) { storage.setItem(key, serialize(val)) }
-		api.get = function(key) { return deserialize(storage.getItem(key)) }
-		api.remove = function(key) { storage.removeItem(key) }
-		api.clear = function() { storage.clear() }
-
-	} else if (globalStorageName in win && win[globalStorageName]) {
-		storage = win[globalStorageName][win.location.hostname]
-		api.set = function(key, val) { storage[key] = serialize(val) }
-		api.get = function(key) { return deserialize(storage[key] && storage[key].value) }
-		api.remove = function(key) { delete storage[key] }
-		api.clear = function() { for (var key in storage ) { delete storage[key] } }
-
-	} else if (doc.documentElement.addBehavior) {
+	if (doc.documentElement.addBehavior) {
 		function getStorage() {
 			if (storage) { return storage; }
 			storage = doc.body.appendChild(doc.createElement('div'))
@@ -73,7 +59,19 @@ var store = (function(){
 			}
 			storage.save(localStorageName)
 		}
+	} else if (localStorageName in win && win[localStorageName]) {
+		storage = win[localStorageName]
+		api.set = function(key, val) { storage.setItem(key, serialize(val)) }
+		api.get = function(key) { return deserialize(storage.getItem(key)) }
+		api.remove = function(key) { storage.removeItem(key) }
+		api.clear = function() { storage.clear() }
+
+	} else if (globalStorageName in win && win[globalStorageName]) {
+		storage = win[globalStorageName][win.location.hostname]
+		api.set = function(key, val) { storage[key] = serialize(val) }
+		api.get = function(key) { return deserialize(storage[key] && storage[key].value) }
+		api.remove = function(key) { delete storage[key] }
+		api.clear = function() { for (var key in storage ) { delete storage[key] } }
 	}
-	
 	return api
 })()
